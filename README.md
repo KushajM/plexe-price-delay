@@ -26,7 +26,31 @@ to +9.4% at four months, because the distribution is skewed: at a month a rise o
 **Nothing beat assuming no change.** A fitted booking curve and a delay-only curve both scored
 negative skill against carrying the price forward. A quantile model over 7 rolling origins and 3
 seeds beat the shipped lookup at all 7 origins, but by 0.0033 against a pre-registered bar of
-0.005 with 4 of 7 intervals clear of zero, so it does not ship and the page says so.
+0.005 with 4 of 7 intervals clear of zero.
+
+**Market co-movement failed.** The strongest remaining idea was that a market already repricing
+upward keeps repricing upward. Built as of the moment of asking, reading only repricing events
+booked strictly earlier — the booking window itself is the future — over 57,488 events it gained
++0.0033 with 3 of 7 intervals clear. No better than leaving it out.
+
+**One arm passed its gate and still does not ship.** Board basis, refundability, provider and the
+stay's day of week and month gained +0.0055 where they were first noticed. That arm was not
+pre-registered, so it was registered and re-run on five earlier origins it had never seen: +0.0074,
+5 of 5 wins, 4 of 5 intervals clear. It passed.
+
+It passed the wrong test. Pinball loss rewards a narrow interval and never asks whether the
+interval is honest, and 62% of that gain sat at the tenth percentile. The model's nominal 80% band
+covered **74.1%** of outcomes. Conformalising both sides to a true 80%:
+
+| | coverage | band width |
+|---|---|---|
+| delay lookup | 80.8% | 0.3484 |
+| segment model | 79.9% | 0.3428 |
+
+1.6% narrower, in 6 of 11 origins. That is the size of the real effect, and it is not worth a
+model. On direction it is worth 0.0014 of absolute error against assuming no change, about one
+percent. The bar was not moved; the bar was simply measuring the wrong thing for a page that
+prints "8 in 10 landed here" under the chart, and a coverage requirement now sits alongside it.
 
 **Hotel identity adds nothing on this axis.** Held-out pinball loss for delay by hotel was 0.11099
 against 0.11090 for delay alone. A property we have never seen is drawn from the same curve as a
