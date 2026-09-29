@@ -205,39 +205,6 @@ footer a{color:var(--ink-3)}
       </div>
     </details>
     <details>
-      <summary>Why the delay curve has no model behind it <span class="n">five tried, all lost</span></summary>
-      <div class="body">
-        <p style="margin:0">Held-out mean absolute error on the log price ratio: carrying the price
-          forward <strong>0.0962</strong>, a fitted booking curve <strong>0.0967</strong>, a
-          delay-only curve <strong>0.0974</strong>. Both structures score negative skill.</p>
-        <p>A quantile model over 7 rolling origins and 3 seeds, cluster-bootstrapped on hotel, beat
-          the shipped lookup at all 7 origins, but by <strong>0.0033</strong> against a
-          pre-registered bar of <strong>0.005</strong> with 4 of 7 intervals clear of zero.</p>
-        <p><strong>Market co-movement was the strongest remaining idea and it failed.</strong> If
-          other hotels in this market have been repricing upward, this one plausibly will too. The
-          feature has to be built as of the moment you ask, reading only repricing events booked
-          strictly earlier, because the booking window itself is the future. Built that way over
-          57,488 repricing events it gained <strong>+0.0033</strong>, three of seven intervals
-          clear, which is no better than leaving it out.</p>
-        <p><strong>A second arm passed its gate and still does not ship, and the reason is worth
-          stating.</strong> Board basis, refundability, provider and the stay's day of week and
-          month gained +0.0055 where they were first noticed. That was not a pre-registered arm, so
-          it was registered and re-run on five earlier origins it had never seen, where it gained
-          <strong>+0.0074</strong> and won 5 of 5. It passed.</p>
-        <p>It passed the wrong test. Pinball loss rewards a narrow interval and does not ask whether
-          the interval is honest, and 62% of that gain sat at the tenth percentile. The model's
-          80% band covered <strong>74.1%</strong> of outcomes. The band on this page is captioned
-          "8 in 10 landed here", so shipping it would have put a false sentence under the chart.
-          Conformalising both sides to a true 80% leaves the model's band <strong>1.6%</strong>
-          narrower than the lookup's, in 6 of 11 origins. That is the size of the real effect.</p>
-        <p style="margin-bottom:0">On direction it adds almost nothing either: its median beats
-          assuming no change by 0.0014 on absolute error, about one percent. Hotel identity adds
-          nothing on this axis at all, held-out pinball 0.11099 by hotel against 0.11090 for delay
-          alone. A property we have never seen is drawn from the same curve as a familiar one and
-          loses +0.26% for it.</p>
-      </div>
-    </details>
-    <details>
       <summary>Pricing a property with no history <span class="n">400 trees, 0.4052 log-MAE</span></summary>
       <div class="body">
         <p style="margin:0 0 12px">A property with no quote has no anchor, so the price level itself
@@ -254,40 +221,6 @@ footer a{color:var(--ink-3)}
           <strong>147%</strong> for chain, <strong>123%</strong> for market, <strong>107%</strong>
           for star band, <strong>94%</strong> for property type and <strong>11%</strong> for
           facility count. The form is not decoration around a market lookup.</p>
-      </div>
-    </details>
-    <details>
-      <summary>A number this page published and has withdrawn <span class="n">0.1928 was leakage</span></summary>
-      <div class="body">
-        <p style="margin:0">This page previously said the cold-start estimator scored
-          <strong>0.1928</strong> log-MAE with a median error of 8.6%. That was wrong, and the
-          honest figure is <strong>0.4052</strong> with a median error of 30.3%.</p>
-        <p>Every neighbourhood feature was built leave-one-out, as the subject's cell mean with the
-          subject's own price taken out: <code>(sum &minus; own) / (count &minus; 1)</code>. That
-          looks safe, and it passes the obvious test, which is that the feature equals what you
-          would have got had the property never existed. It is not safe. Conditional on the cell
-          total the value is a strictly decreasing function of the subject's own price, so a
-          learner that can estimate the total from anything else recovers the price. The feature
-          set handed it two ways to do that.</p>
-        <p>The test that catches it is to shuffle the target within currency, rebuild every feature
-          against the shuffle, and refit. A clean feature set then scores the currency baseline of
-          <strong>0.6100</strong>, because nothing predictable is left. The original set scored
-          <strong>0.3166</strong>. Rebuilding so that a property's tables are computed only from
-          other properties puts the shuffled score back at 0.6189 and the real score at 0.4052.</p>
-        <p style="margin-bottom:0">The delay curve above is unaffected: it holds no fitted
-          parameters and no such feature.</p>
-      </div>
-    </details>
-    <details>
-      <summary>How a pair is built <span class="n">method and exclusions</span></summary>
-      <div class="body">
-        <p style="margin:0" id="method"></p>
-        <p>A hotel is only listed when it can answer all three horizons on 12 or more of its own
-          pairs per window, which is why the list is <strong id="n-hotels"></strong> and not more. A
-          tenth percentile over fewer than eleven points is just the minimum.</p>
-        <p style="margin-bottom:0">3,157 hotels in the source carry coordinates of exactly (0,0),
-          putting Baku, San Diego and Bogota in one neighbourhood. They are excluded from every
-          geographic feature rather than treated as a place.</p>
       </div>
     </details>
   </div>
@@ -451,7 +384,6 @@ function render(){
   const sec=section();
   document.getElementById('hdr-pairs').textContent=fmtN(DELAY.nPairs);
   document.getElementById('hdr-hotels').textContent=fmtN(DELAY.nHotels);
-  document.getElementById('n-hotels').textContent=DELAY.hotels.length+' hotels';
   document.getElementById('controls').innerHTML=`
     <label><span>Property</span><select id="pick">
       <option value="${COLDKEY}"${sec.cold?' selected':''}>A property we have never seen</option>
@@ -544,7 +476,6 @@ function render(){
     ['This model, in your browser','0.4052'],['Same model plus the point set','0.3816'],
     ['Median error','30.3%'],['Within 25% of the true rate','42%'],['Within 50%','72%']])
     .map(([k,v])=>`<div class="kv"><dt>${k}</dt><dd>${v}</dd></div>`).join('');
-  document.getElementById('method').textContent=DELAY.method+'.';
 }
 document.addEventListener('change',e=>{
   if(e.target.id==='pick'){S.hotelId=e.target.value;if(S.hotelId===COLDKEY)loadModel();render();}
